@@ -2,7 +2,7 @@
 
 A nice VueJS based frontend for serving for static files with search.
 
-![Serving Moo](https://imgur.com/a/MhQpRgS)
+![Serving Moo](https://github.com/vagol942/serving-moo/raw/master/demo.gif)
 
 # Usage
 
