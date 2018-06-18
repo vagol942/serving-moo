@@ -2,6 +2,8 @@
 
 A nice VueJS based frontend for serving for static files with search.
 
+![Serving Moo](https://imgur.com/a/MhQpRgS)
+
 # Usage
 
 Clone this repo.
