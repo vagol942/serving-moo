@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ServingMoo</title>
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <div id="header">
+            <div id="searchBar">
+                <img src="lupe.svg" class="lupe" /> <input class="searchInput" v-model="searchTerm" placeholder="search...">
+            </div>
+            <div id="locationBar">
+                <span class="locationElement" v-on:click="changeLocation('root')" >root/</span><span class="locationElement" v-for="(path,index) in location" v-on:click="changeLocation(index)">{{path}}/</span>
+            </div>
+        </div>
+        <div id="content">
+            <div>
+                <div class="item" style="cursor: pointer" v-on:click="previousLocation">
+                    <div></div>
+                    <div class="dots">...</div>
+                </div>
+            </div>
+            <div  v-for="item in visibleTree">
+                <div class="item fileItem" v-if="item.fileName">
+                    <img class="fileIcon" src="file.svg" /> 
+                    <div class="fileName"><a v-bind:href="item.path.join('/')">{{item.fileName}}</a></div>
+                    <div>{{(new Date(Date.parse(item.mtime))).toLocaleDateString()}}</div>
+                    <div>{{formatSizeKB(item.size)}}KB</div>
+                </div>
+                <div class="item folderItem" v-else>
+                    <img class="fileIcon" src="folder.svg" />
+                    <div class="fileName"><span style="cursor: pointer" v-on:click="handleFolderClick(item)">{{item.dirName}}</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function getContentsFromPaths(fullTree, location) {
+            if (location === []) {
+                return fullTree;
+            } else {
+                currentLocation = location[0];
+                let tree = fullTree;
+                location.forEach(currentLocation => {
+                    tree = tree.find(item => {
+                            return (item.dirName && item.dirName === currentLocation)
+                        }).contents   
+                });
+                return tree;
+            
+            }
+        }
+        function search(tree, term) {
+            if (term == "") {
+                return []
+            }
+            const lc_term = term.toLowerCase();
+            let contents = [];
+            tree.forEach(item => {
+                if (item.fileName && item.fileName.toLowerCase().includes(lc_term)) {
+                    contents.push(item)
+                } else if (item.dirName) {
+                    if (item.dirName.toLowerCase().includes(lc_term)) {
+                        contents.push(item)
+                    }
+                    contents = contents.concat(search(item.contents, term))
+                }
+            })
+            return contents;
+        }
+
+        const app = new Vue({
+            el: '#app',
+            data: {
+                fullTree: [],
+                tree: [],
+                location: [],
+                searchTerm: "",
+            },
+            computed: {
+                searchedContent: function () {
+                    return  search(this.tree, this.searchTerm)
+                },
+                visibleTree: function() {
+                    return this.searchTerm === "" ? this.tree : this.searchedContent;
+                }
+            },
+            created: function () {
+                fetch('tree.json')
+                    .then(res => res.json())
+                    .then(jsonData => {
+                        this.fullTree = jsonData
+                        this.tree = this.fullTree
+                    });
+            },
+            methods: {
+                handleFolderClick: function (itemFolder) {
+                    this.location = itemFolder.path.slice(1);
+                    this.tree = itemFolder.contents;
+                    this.searchTerm = "";
+                },
+                previousLocation: function () {
+                    if (this.location == []) {
+                        return;
+                    }
+                    else {
+                        this.location = this.location.slice(0, this.location.length - 1);
+                        this.searchTerm = "";
+                        this.tree = getContentsFromPaths(this.fullTree, this.location);
+                    }
+                },
+                changeLocation: function (location) {
+                    if (location === 'root') {
+                        this.location = [];
+                        this.searchTerm = "";
+                        this.tree = this.fullTree;
+                    } else {
+                        this.location = this.location.slice(0, location + 1)
+                        this.searchTerm = "";
+                        this.tree = getContentsFromPaths(this.fullTree, this.location);
+                    }
+                },
+                formatSizeKB(size) {
+                    return Math.ceil(size / 1000)
+                }
+            }
+
+        })     
+    </script>
+</body>
+</html>

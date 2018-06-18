@@ -1,0 +1,16 @@
+{
+  "name": "serving-moo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^10.3.3",
+    "http-server": "^0.11.1",
+    "ts-node": "^6.1.1",
+    "typescript": "^2.9.2"
+  },
+  "scripts": {
+    "serve": "http-server index.html",
+    "generate": "ts-node index.ts"
+  }
+}
