@@ -10,7 +10,7 @@
     "typescript": "^2.9.2"
   },
   "scripts": {
-    "serve": "http-server index.html",
+    "serve": "http-server ./",
     "generate": "ts-node index.ts"
   }
 }
