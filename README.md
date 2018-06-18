@@ -1,6 +1,6 @@
 # Serving Moo
 
-A nice static frontend for serving static files.
+A nice VueJS based frontend for serving for static files with search.
 
 # Usage
 
