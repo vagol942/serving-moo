@@ -27,15 +27,17 @@
                 </div>
             </div>
             <div  v-for="item in visibleTree">
-                <div class="item fileItem" v-if="item.fileName">
-                    <img class="fileIcon" src="file.svg" /> 
-                    <div class="fileName"><a v-bind:href="item.path.join('/')">{{item.fileName}}</a></div>
-                    <div>{{(new Date(Date.parse(item.mtime))).toLocaleDateString()}}</div>
-                    <div>{{formatSizeKB(item.size)}}KB</div>
-                </div>
-                <div class="item folderItem" v-else>
+                <a class="fileItem" v-bind:href="item.path.map(encodeURIComponent).join('/')" v-if="item.fileName">
+                    <div class="item fileItem">
+                        <img class="fileIcon" src="file.svg" /> 
+                        <div class="fileName">{{item.fileName}}</div>
+                        <div class="fileName">{{(new Date(Date.parse(item.mtime))).toLocaleDateString()}}</div>
+                        <div class="fileName">{{formatSizeKB(item.size)}}KB</div>
+                    </div>
+                </a>
+                <div class="item folderItem" style="cursor: pointer" v-on:click="handleFolderClick(item)" v-else>
                     <img class="fileIcon" src="folder.svg" />
-                    <div class="fileName"><span style="cursor: pointer" v-on:click="handleFolderClick(item)">{{item.dirName}}</span></div>
+                    <div class="fileName"><span>{{item.dirName}}</span></div>
                 </div>
             </div>
         </div>

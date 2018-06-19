@@ -111,8 +111,12 @@ body {
     overflow-y: auto;
 }
 
-.fileName>a {
+.fileName {
     color: black;
+    text-decoration: none;
+}
+
+.fileItem {
     text-decoration: none;
 }
 
